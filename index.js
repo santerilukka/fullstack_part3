@@ -60,6 +60,14 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
+    if (!body.name || !body.number) {
+        return response.status(400).json({
+            error: 'Nimi tai numero puuttuu'})
+    } else if (persons.some(person => person.name === body.name)) {
+        return response.status(400).json({
+            error: 'Nimen on oltava uniikki'})
+    }
+
     const person = {
         id: Math.floor(Math.random() * 1000000),
         name: body.name,
