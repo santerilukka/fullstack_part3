@@ -22,24 +22,34 @@ app.get('/api/persons', (request, response) => {
     })
   })
 
-app.get('/info', (request, response) => {
-    const amount = String(persons.length)
+app.get('/info', (request, response, next) => {
+    Person.countDocuments({})
+    .then(count => {
+        const currentDate = new Date().toString()
+        const text = `<p>Phonebook has info for ${count} people<p/> <br>${currentDate}`
+        console.log(text)
+        response.send(text)
+    })
+    .catch(error => next(error))
+    
+    
+    /*const amount = String(persons.length)
     const currentDate = new Date().toString()
     const text = `<p>Phonebook has info for ${amount} people<p/> <br>${currentDate}`
     
-    response.send(text)
+    response.send(text)*/
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    
-  
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
+    .then(person => {
+        if (person) {
+            response.json(person)
+        } else {
+            response.status(404).end()
+        }
+    })
+    .catch(error => next(error))
   })
 
 app.delete('/api/persons/:id', (request, response, next) => {
